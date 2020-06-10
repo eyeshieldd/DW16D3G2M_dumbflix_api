@@ -6,6 +6,7 @@ const {
     delete: deleteUsers
 } = require("../controllers/user");
 const { register } = require("../controllers/register");
+const { login } = require("../controllers/login");
 
 
 
@@ -15,7 +16,7 @@ router.get("/users", findUsers)
 
 
 router.post("/register", register);
+router.post("/login", login);
 
-// Authentication Routes
 
 module.exports = router;
