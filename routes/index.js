@@ -4,13 +4,17 @@ const router = express.Router();
 const {
     read: findUsers,
     delete: deleteUsers
-} = require("../controllers/user.js");
+} = require("../controllers/user");
+const { register } = require("../controllers/register");
 
 
-// User Routes
-router.get("/users", findUsers);
-router.delete("/user/:id", deleteUsers);
 
+router.get("/users", findUsers)
+    .delete("/user/:id", deleteUsers)
+
+
+
+router.post("/register", register);
 
 // Authentication Routes
 
