@@ -1,19 +1,22 @@
 const { category } = require("../models");
 const Joi = require("@hapi/joi");
 
+
 exports.read = async (req, res) => {
     try {
         const categori = await category.findAll();
-
-        res.send({ data: categori });
-    } catch (error) {
-        console.log(error);
+        res.status(200).send({ data: categori });
+    } catch (err) {
+        res.status(500).send({ massage: "Internal server eror" });
     }
 };
+
 exports.add = async (req, res) => {
     try {
+
         const schema = Joi.object({
             name: Joi.string().alphanum().required(),
+
         });
         const { error } = schema.validate(req.body);
         if (error)
@@ -24,35 +27,48 @@ exports.add = async (req, res) => {
             });
         const categori = await category.create(req.body);
 
-        res.send({ data: categori });
-    } catch (error) {
-        console.log(error);
+        res.status(200).send({ data: categori });
+    } catch (err) {
+        res.status(200).send({ massage: "Internal Server Error" });
     }
 };
-
 
 exports.update = async (req, res) => {
     try {
         const { id } = req.params;
-        // const { name } = req.body;
+        const check = await category.findOne({
+            where: { id }
+        })
+        if (!check) {
+            res.status(404).send({ massage: "category not found" });
+        }
+        const schema = Joi.object({
+            name: Joi.string().alphanum().required(),
+
+        });
+        const { error } = schema.validate(req.body);
+
+        if (error)
+            res.status(400).send({
+                error: {
+                    message: error.details[0].message,
+                },
+            });
         const categori = await category.update(req.body, {
             where: {
-                id:id,
+                id,
             },
         });
-        if (categori) {
-            res.send({
-                data: {
-                    categori
-                }
-            });
-
+        if (categori < 1) {
+            res.status(201).send({ massage: "request succes but no update" });
         }
-        console.log(categori);
-    } catch (error) {
-        console.log(error);
+        const { name } = req.body
+        res.status(200).send({ data: { name, id } });
+    } catch (err) {
+        res.status(200).send({ massage: "Internal Server Error" });
     }
 };
+
 exports.delete = async (req, res) => {
     try {
         const { id } = req.params;
@@ -61,9 +77,12 @@ exports.delete = async (req, res) => {
                 id,
             },
         });
+        if (categori < 1) {
+            res.status(400).send({ "massage": "Category not found" });
+        }
+        res.status(200).send({ data: { id } });
+    } catch (err) {
+        res.status(500).send({ massage: "Internal Server Error" });
 
-        res.send({ data: { categori } });
-    } catch (error) {
-        console.log(error);
     }
 };

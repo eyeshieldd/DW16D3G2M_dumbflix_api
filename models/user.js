@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     address: DataTypes.STRING,
     subscribe: DataTypes.BOOLEAN
-  }, { timestamps: false });
+  }, {});
   user.associate = function (models) {
-    // associations can be defined here
+    user.hasOne(models.transaction);
   };
   return user;
 };

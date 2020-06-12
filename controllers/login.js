@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
                 token,
             },
         });
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
+        res.status(500).send({ massage: "Internal Server Error" });
     }
 };

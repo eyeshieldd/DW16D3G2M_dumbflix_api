@@ -2,14 +2,17 @@ const { user } = require("../models");
 
 exports.read = async (req, res) => {
     try {
-        const users = await user.findAll();
+        const users = await user.findAll({
+            // attributes: {
+            //     exclude: ["role"],
+            // }
+        });
+        res.status(200).send({ data: users });
 
-        res.send({ data: users });
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
+        res.status(500).send({ massage: "Internal Server Error" });
     }
 };
-
 
 exports.delete = async (req, res) => {
     try {
@@ -19,9 +22,11 @@ exports.delete = async (req, res) => {
                 id,
             },
         });
-
-        res.send({ data: { id } });
-    } catch (error) {
-        console.log(error);
+        if (users < 1) {
+            res.status(400).send({ massage: "User not found" });
+        }
+        res.status(200).send({ data: { id } });
+    } catch (err) {
+        res.status(500).send({ massage: "Internal Server Error" });
     }
 };
