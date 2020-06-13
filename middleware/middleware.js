@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { user } = require('../models');
 
 exports.middleware = (req, res, next) => {
   let header, token;
@@ -16,5 +17,22 @@ exports.middleware = (req, res, next) => {
     next();
   } catch (error) {
     res.status(400).send({ message: "Invalid token" });
+  }
+};
+
+exports.authAdmin = async (req, res, next) => {
+  try {
+    const User = await user.findOne({
+      where: {
+        id: req.user.id
+      }
+    });
+    console.log(User)
+    if (User.role !== 1)
+      return res.status(400).send({ message: 'Invalid Operation' });
+
+    next();
+  } catch (error) {
+    res.status(400).send({ message: 'Invalid token' });
   }
 };

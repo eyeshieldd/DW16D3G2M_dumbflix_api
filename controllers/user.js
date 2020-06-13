@@ -1,11 +1,12 @@
 const { user } = require("../models");
+const Joi = require("@hapi/joi");
 
 exports.read = async (req, res) => {
     try {
         const users = await user.findAll({
-            // attributes: {
-            //     exclude: ["role"],
-            // }
+            attributes: {
+                exclude: ["role", "createdAt", "updatedAt"],
+            }
         });
         res.status(200).send({ data: users });
 

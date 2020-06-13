@@ -22,9 +22,9 @@ exports.login = async (req, res) => {
         const users = await user.findOne({
             where: { email },
         });
+        if (!users) return res.status(201).send({ message: "Invalid Login" });
 
-        if (!users) return res.status(400).send({ message: "Invalid Login" });
-
+        console.log(users)
         const validPass = await bcrypt.compare(password, users.password);
 
         if (!validPass) return res.status(400).send({ message: "Invalid Login" });

@@ -1,5 +1,6 @@
 
 const { film, category } = require("../models");
+const Joi = require("@hapi/joi");
 
 exports.read = async (req, res) => {
     try {
@@ -12,7 +13,7 @@ exports.read = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt"],
+                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt", "role"],
             },
         });
         res.status(200).send({ data: films });
@@ -35,10 +36,13 @@ exports.readOne = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt"],
+                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt", "role"],
             },
 
         });
+        if (films < 1) {
+            res.status(400).send({ massage: "Id not found" });
+        }
         res.status(200).send({ data: films });
     } catch (err) {
         res.status(500).send({ massage: "Internal Server Error" });
@@ -48,11 +52,11 @@ exports.readOne = async (req, res) => {
 exports.add = async (req, res) => {
     try {
         const schema = Joi.object({
-            startDate: Joi.date().required(),
-            dueDate: Joi.date().required(),
-            userId: Joi.number().required(),
-            attache: Joi.string().required(),
-            status: Joi.string().required()
+            title: Joi.string().required(),
+            thumbnailFilm: Joi.string(),
+            year: Joi.number().required(),
+            categoryId: Joi.number().required(),
+            description: Joi.string()
         });
         const { error } = schema.validate(req.body);
         if (error)
@@ -64,23 +68,9 @@ exports.add = async (req, res) => {
         const Category = await category.findOne({ where: { id: req.body.categoryId } })
 
         if (!Category) {
-            res.status(400).send({ massage: "Category not found" });
+            res.status(400).send({ massage: "film not found" });
         }
-        const schema = Joi.object({
-            title: Joi.string().required(),
-            thumbnailFilm: Joi.string(),
-            year: Joi.number().required(),
-            categoryId: Joi.number().required(),
-            description: Joi.string()
-        });
-        const { error } = schema.validate(req.body);
 
-        if (error)
-            res.status(400).send({
-                error: {
-                    message: error.details[0].message,
-                },
-            });
         const films = await film.create(req.body);
 
         const insert = await film.findOne({
@@ -94,7 +84,7 @@ exports.add = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt"],
+                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt", "role"],
             },
         })
 
@@ -115,7 +105,6 @@ exports.update = async (req, res) => {
             res.status(400).send({ massage: "Film not found" });
 
         }
-
         const schema = Joi.object({
             title: Joi.string().required(),
             thumbnailFilm: Joi.string(),
@@ -136,7 +125,7 @@ exports.update = async (req, res) => {
             { where: { id: data.id } }
         )
         if (update < 1) {
-            res.status(201).send({ massage: "Category not found" });
+            res.status(201).send({ massage: "film not found" });
         }
         const getData = await film.findOne({
             where: {
@@ -149,7 +138,7 @@ exports.update = async (req, res) => {
                 },
             },
             attributes: {
-                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt"],
+                exclude: ["CategoryId", "categoryId", "createdAt", "updatedAt", "role"],
             },
         })
         res.status(200).send({ data: getData });
@@ -166,7 +155,7 @@ exports.delete = async (req, res) => {
             }
         });
         if (deleted < 1) {
-            res.status(404).send({ massage: "Category not found" });
+            res.status(404).send({ massage: "film not found" });
         }
         res.status(200).send({ data: { id } });
     } catch (err) {

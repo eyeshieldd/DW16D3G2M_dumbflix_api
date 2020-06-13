@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { middleware } = require("../middleware/middleware");
+const { middleware, authAdmin, } = require("../middleware/middleware");
 
 const {
     read: findUsers,
@@ -29,6 +29,14 @@ const {
     delete: deleteFilm,
 
 } = require("../controllers/film");
+const {
+    add: addEpisode,
+    read: readEpisode,
+    update: editEpisode,
+    readOne: getDetail,
+    delete: deleteEpisode,
+
+} = require("../controllers/episode");
 
 const { register } = require("../controllers/register");
 const { login } = require("../controllers/login");
@@ -38,29 +46,31 @@ const { login } = require("../controllers/login");
 router.get("/users", findUsers)
     .delete("/user/:id", deleteUsers)
 
-
-
 router.get("/category", findCategory)
-    .post("/category", middleware, addCategory)
-    .patch("/category/:id", middleware, updateCategory)
-    .delete("/category/:id", middleware, deleteCategory)
+    .post("/category", middleware, authAdmin, addCategory)
+    .patch("/category/:id", middleware, authAdmin, updateCategory)
+    .delete("/category/:id", middleware, authAdmin, deleteCategory)
 
 router.get("/transactions", findTransaction)
-    .post("/transactions", middleware, addTransaction)
-    .patch("/transaction/:id", middleware, updateTransaction)
-    .delete("/transaction/:id", middleware, deleteTransaction)
+    .post("/transactions", middleware, authAdmin, addTransaction)
+    .patch("/transaction/:id", middleware, authAdmin, updateTransaction)
+    .delete("/transaction/:id", middleware, authAdmin, deleteTransaction)
+
+router.get("/film/:id/episodes", middleware, authAdmin, readEpisode)
+router.post('/episode', middleware, authAdmin, addEpisode);
+router.get("/film/:idFilm/episodes/:idEpisode", middleware, authAdmin, getDetail);
+router.delete("/episode/:id", middleware, authAdmin, deleteEpisode);
+router.get("/episode/:id", middleware, authAdmin, editEpisode);
+
 
 
 router.get("/films", readFilm)
     .get("/film/:id", readOne)
-    .post("/films", middleware, addFilm)
-    .patch("/film/:id", middleware, updateFilm)
-    .delete("/film/:id", middleware, deleteFilm)
+    .post("/films", middleware, authAdmin, addFilm)
+    .patch("/film/:id", middleware, authAdmin, updateFilm)
+    .delete("/film/:id", middleware, authAdmin, deleteFilm)
 
-router.post("/register", register);
-router.post("/login", login);
-
-
-
+router.post("/register", register)
+    .post("/login", login)
 
 module.exports = router;

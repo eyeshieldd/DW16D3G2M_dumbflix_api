@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     gender: DataTypes.STRING,
     phone: DataTypes.STRING,
     address: DataTypes.STRING,
-    subscribe: DataTypes.BOOLEAN
+    subscribe: DataTypes.BOOLEAN,
+    role: DataTypes.INTEGER
   }, {});
   user.associate = function (models) {
     user.hasOne(models.transaction);

@@ -11,7 +11,9 @@ exports.register = async (req, res) => {
             password: Joi.string().min(6).required(),
             gender: Joi.string().required(),
             phone: Joi.string().required(),
-            address: Joi.string().required()
+            address: Joi.string().required(),
+            subscribe: Joi.boolean().required(),
+            role: Joi.number().required()
         });
         const { error } = schema.validate(req.body);
 

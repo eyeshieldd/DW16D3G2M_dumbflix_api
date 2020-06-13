@@ -1,16 +1,21 @@
 const { category } = require("../models");
 const Joi = require("@hapi/joi");
 
-
+// function for read all category
 exports.read = async (req, res) => {
     try {
-        const categori = await category.findAll();
+        const categori = await category.findAll({
+            attributes: {
+                exclude: ["createdAt", "updatedAt"],
+            },
+        });
         res.status(200).send({ data: categori });
     } catch (err) {
         res.status(500).send({ massage: "Internal server eror" });
     }
 };
 
+// function for add new category
 exports.add = async (req, res) => {
     try {
 
@@ -33,6 +38,7 @@ exports.add = async (req, res) => {
     }
 };
 
+// function for update new category
 exports.update = async (req, res) => {
     try {
         const { id } = req.params;
@@ -69,6 +75,7 @@ exports.update = async (req, res) => {
     }
 };
 
+// function for delete category
 exports.delete = async (req, res) => {
     try {
         const { id } = req.params;

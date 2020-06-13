@@ -1,5 +1,6 @@
 
 const { user, transaction } = require("../models");
+const Joi = require("@hapi/joi");
 
 exports.read = async (req, res) => {
     try {
@@ -26,13 +27,13 @@ exports.add = async (req, res) => {
     try {
         const User = await user.findOne({ where: { id: req.body.userId } })
         if (!User) {
-            res.status(400).send({ massage: "Category not found" });
+            res.status(400).send({ massage: "user not found" });
         }
         const schema = Joi.object({
             startDate: Joi.date().required(),
             dueDate: Joi.date().required(),
             userId: Joi.number().required(),
-            attache: Joi.string().required(),
+            attach: Joi.string().required(),
             status: Joi.string().required()
         });
         const { error } = schema.validate(req.body);
@@ -71,13 +72,13 @@ exports.update = async (req, res) => {
             where: { id }
         })
         if (!check) {
-            res.status(400).send({ massage: "Category not found" });
+            res.status(400).send({ massage: "transaction not found" });
         }
         const schema = Joi.object({
             startDate: Joi.date().required(),
             dueDate: Joi.date().required(),
             userId: Joi.number().required(),
-            attache: Joi.string().required(),
+            attach: Joi.string().required(),
             status: Joi.string().required()
         });
         const { error } = schema.validate(req.body);
@@ -94,7 +95,7 @@ exports.update = async (req, res) => {
             }
         });
         if (coba < 1) {
-            res.status(210).send({ massage: "Category not found" });
+            res.status(210).send({ massage: "transaction not found" });
         }
         const getData = await transaction.findOne({
             where: {
@@ -116,6 +117,7 @@ exports.update = async (req, res) => {
         res.status(500).send({ massage: "Internal Server Error" });
     }
 };
+
 exports.delete = async (req, res) => {
     try {
         const { id } = req.params;
@@ -125,7 +127,7 @@ exports.delete = async (req, res) => {
             }
         });
         if (transactions < 1) {
-            res.status(400).send({ massage: "Category not found" });
+            res.status(400).send({ massage: "transaction not found" });
         }
         res.status(400).send({ data: id });
     } catch (err) {
